@@ -1,0 +1,54 @@
+services:
+  rasa:
+    restart: always
+    build: .
+    environment:
+      - SQLALCHEMY_SILENCE_UBER_WARNING=1
+    command: ["rasa","run","-m","models","--endpoints","endpoints.yml","--port","8000","--credentials","credentials.yml","--cors","*"]
+    ports:
+      - 8000:8000
+    depends_on:
+      - duckling
+    volumes:
+      - .:/app
+  action-server:
+    restart: always
+    build: .
+    command: ["rasa", "run", "actions"]
+    ports:
+      - 5055:5055
+    volumes:
+      - .:/app
+  duckling:
+    image: rasa/duckling
+    command: ["duckling-example-exe", "run","-p", "8001", "rasa/duckling"]
+    ports:
+      - "8001:8000"
+    environment:
+      - DUCKLING_DIMENSIONS= "time"
+      - TZ= "America/New_York"
+      - DUCKLING_HOST=rasa
+      - DUCKLING_PORT=8000
+
+networks:
+    mynetwork:
+      driver: bridge
+
+
+
+
+
+#  duckling:
+#    restart: always
+#    image: rasa/duckling:latest
+#    expose:
+#      - "8000"
+#    command: ["duckling-example-exe", "-p", "8000", "--no-access-log", "--no-error-log"]
+#    ports:
+#      - 8000:8000
+#    environment:
+#      - URL=http://localhost:8000
+#      - TZ=UTC
+#    volumes:
+#      - ./config.yml:/app/config.yml
+
