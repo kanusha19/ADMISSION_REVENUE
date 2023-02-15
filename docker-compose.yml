@@ -23,7 +23,7 @@ services:
     image: rasa/duckling
     command: ["duckling-example-exe", "run","-p", "8001", "rasa/duckling"]
     ports:
-      - "8001:8000"
+      - "8001:8001"
     environment:
       - DUCKLING_DIMENSIONS= "time"
       - TZ= "America/New_York"
